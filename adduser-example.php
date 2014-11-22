@@ -19,6 +19,8 @@ $UserPass = 'test100';
 $FirstName = 'Bob';
 $LastName = 'Bobbles.';
 $Patronymic = 'Ivanovich :)';
+$sex = 'Male';
+$role = 'Participant';
 
 $jab = new Jabber($display_debug_info);
 $addmsg = new AddMessenger($jab, $UserLogin, $UserPass);
@@ -44,7 +46,7 @@ echo '<P>******** Exit of User Creation! ErrorCode=' . $AddUserErrorCode . ' ***
 
 $AddVcardErrorCode = 14000;
 $jab = new Jabber($display_debug_info);
-$avcard = new AddVcard($jab, $UserLogin, $UserPass, $FirstName, $LastName, $Patronymic);
+$avcard = new AddVcard($jab, $UserLogin, $UserPass, $FirstName, $LastName, $Patronymic, $sex, $role);
 
 $jab->set_handler("connected", $avcard, "handleConnected");
 $jab->set_handler("authenticated", $avcard, "handleAuthenticated");

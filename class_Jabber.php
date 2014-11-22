@@ -2503,13 +2503,14 @@ class Jabber
             $this->_log("Don't know what to do with packet!");
         }
     }
+}
 
-    // ==== Experimental service discovery support - END =======================
+// ==== Experimental service discovery support - END =======================
 
 
-    // ===== VCARD class =========================================================
-    // https://www.ejabberd.im/node/3126
-    // This class handles events fired by the first call of Jabber client class (to create a user);
+// ===== VCARD class =========================================================
+// https://www.ejabberd.im/node/3126
+// This class handles events fired by the first call of Jabber client class (to create a user);
 class AddMessenger
 {
 
@@ -2575,6 +2576,5 @@ class AddVcard
 
 } // End of AddVcard class
 
-}
 
 ?>
