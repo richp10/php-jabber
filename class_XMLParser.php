@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file was contributed (in part or whole) by a third party, and is
  * released under a BSD-compatible free software license.  Please see the
@@ -37,105 +38,111 @@
  * 
 */
 
-class XMLParser {
+class XMLParser
+{
 
-	function XMLParser() {
-		$this->valid = false;
-	}
-	
-	// xmlize()
-	// (c) Hans Anderson / http://www.hansanderson.com/php/xml/
+    function XMLParser()
+    {
+        $this->valid = false;
+    }
 
-	function xmlize($data) {
-		$vals = $index = $array = array();
-		$parser = xml_parser_create();
-		xml_parser_set_option($parser, XML_OPTION_CASE_FOLDING, 0);
+    // xmlize()
+    // (c) Hans Anderson / http://www.hansanderson.com/php/xml/
 
-    // XML_OPTION_SKIP_WHITE is disabled as it clobbers valid 
-    // newlines in instant messages
-		xml_parser_set_option($parser, XML_OPTION_SKIP_WHITE, 0);
-		$this->valid = xml_parse_into_struct($parser, $data, $vals, $index);
-		xml_parser_free($parser);
+    function xmlize($data)
+    {
+        $vals = $index = $array = array();
+        $parser = xml_parser_create();
+        xml_parser_set_option($parser, XML_OPTION_CASE_FOLDING, 0);
 
-		$i = 0;
+        // XML_OPTION_SKIP_WHITE is disabled as it clobbers valid
+        // newlines in instant messages
+        xml_parser_set_option($parser, XML_OPTION_SKIP_WHITE, 0);
+        $this->valid = xml_parse_into_struct($parser, $data, $vals, $index);
+        xml_parser_free($parser);
 
-		$tagname = $vals[$i]['tag'];
-		$array[$tagname]['@'] = empty($vals[$i]['attributes'])
-			? array()
-			: $vals[$i]['attributes'];
-		$array[$tagname]['#'] = $this->_xml_depth($vals, $i);
+        $i = 0;
 
-		return $array;
-	}
+        $tagname = $vals[$i]['tag'];
+        $array[$tagname]['@'] = empty($vals[$i]['attributes'])
+            ? array()
+            : $vals[$i]['attributes'];
+        $array[$tagname]['#'] = $this->_xml_depth($vals, $i);
 
-
-
-	// _xml_depth()
-	// (c) Hans Anderson / http://www.hansanderson.com/php/xml/
-
-	function _xml_depth($vals, &$i) {
-		$children = array();
-
-		if (!empty($vals[$i]['value'])) {
-			array_push($children, trim($vals[$i]['value']));
-		}
-
-		while (++$i < count($vals)) {
-			switch ($vals[$i]['type']) {
-				case 'cdata':
-					array_push($children, trim($vals[$i]['value']));
-	 				break;
-
-				case 'complete':
-					$tagname = $vals[$i]['tag'];
-					$size = empty($children[$tagname]) ? 0 : sizeof($children[$tagname]);
-					$children[$tagname][$size]['#'] = array_key_exists('value',$vals[$i])
-						? trim($vals[$i]['value']) : '';
-					if (!empty($vals[$i]['attributes'])) {
-						$children[$tagname][$size]['@'] = $vals[$i]['attributes'];
-					}
-					break;
-
-				case 'open':
-					$tagname = $vals[$i]['tag'];
-					$size = empty($children[$tagname]) ? 0 : sizeof($children[$tagname]);
-					if (!empty($vals[$i]['attributes'])) {
-						$children[$tagname][$size]['@'] = $vals[$i]['attributes'];
-					}
-					$children[$tagname][$size]['#'] = $this->_xml_depth($vals, $i);
-					break;
-
-				case 'close':
-					return $children;
-					break;
-			}
-		}
-
-		return $children;
-	}
+        return $array;
+    }
 
 
 
-	// TraverseXMLize()
-	// (c) acebone@f2s.com, a HUGE help!
+    // _xml_depth()
+    // (c) Hans Anderson / http://www.hansanderson.com/php/xml/
 
-	function TraverseXMLize($array, $arrName = "array", $level = 0) {
-		if ($level == 0) {
-			echo "<pre>";
-		}
+    function _xml_depth($vals, &$i)
+    {
+        $children = array();
 
-		while (list($key, $val) = @each($array)) {
-			if (is_array($val)) {
-				$this->TraverseXMLize($val, $arrName . "[" . $key . "]", $level + 1);
-			} else {
-				echo '$' . $arrName . '[' . $key . '] = "' . $val . "\"\n";
-			}
-		}
+        if (!empty($vals[$i]['value'])) {
+            array_push($children, trim($vals[$i]['value']));
+        }
 
-		if ($level == 0) {
-			echo "</pre>";
-		}
-	}
+        while (++$i < count($vals)) {
+            switch ($vals[$i]['type']) {
+                case 'cdata':
+                    array_push($children, trim($vals[$i]['value']));
+                    break;
+
+                case 'complete':
+                    $tagname = $vals[$i]['tag'];
+                    $size = empty($children[$tagname]) ? 0 : sizeof($children[$tagname]);
+                    $children[$tagname][$size]['#'] = array_key_exists('value', $vals[$i])
+                        ? trim($vals[$i]['value']) : '';
+                    if (!empty($vals[$i]['attributes'])) {
+                        $children[$tagname][$size]['@'] = $vals[$i]['attributes'];
+                    }
+                    break;
+
+                case 'open':
+                    $tagname = $vals[$i]['tag'];
+                    $size = empty($children[$tagname]) ? 0 : sizeof($children[$tagname]);
+                    if (!empty($vals[$i]['attributes'])) {
+                        $children[$tagname][$size]['@'] = $vals[$i]['attributes'];
+                    }
+                    $children[$tagname][$size]['#'] = $this->_xml_depth($vals, $i);
+                    break;
+
+                case 'close':
+                    return $children;
+                    break;
+            }
+        }
+
+        return $children;
+    }
+
+
+
+    // TraverseXMLize()
+    // (c) acebone@f2s.com, a HUGE help!
+
+    function TraverseXMLize($array, $arrName = "array", $level = 0)
+    {
+        if ($level == 0) {
+            echo "<pre>";
+        }
+
+        while (list($key, $val) = @each($array)) {
+            if (is_array($val)) {
+                $this->TraverseXMLize($val, $arrName . "[" . $key . "]", $level + 1);
+            } else {
+                echo '$' . $arrName . '[' . $key . '] = "' . $val . "\"\n";
+            }
+        }
+
+        if ($level == 0) {
+            echo "</pre>";
+        }
+    }
 
 }
+
 ?>

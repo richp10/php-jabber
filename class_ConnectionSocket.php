@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file was contributed (in part or whole) by a third party, and is
  * released under the GNU LGPL.  Please see the CREDITS and LICENSE sections
@@ -50,38 +51,44 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-class ConnectionSocket {
-	var $socket = null;
-	
-	function socket_open($hostname,$port,$timeout) {
-		if ($this->socket = @fsockopen($hostname, $port, $errno, $errstr, $timeout)) {
-			socket_set_blocking($this->socket, 0);
-			socket_set_timeout($this->socket, 31536000);
-			
-			return true;
-		} else {
-			$this->error = "{$errstr} (#{$errno}, ".__FILE__.", ".__LINE__.")";
-			return false;
-		}
-	}
-	
-	function socket_close() {
-		return fclose($this->socket);
-	}
-	
-	function socket_write($data) {
-		return fwrite($this->socket, $data);
-	}
-	
-	function socket_read($byte_count)
-	{
-		$mqr = get_magic_quotes_runtime();
-		set_magic_quotes_runtime(0);
-		$buffer = fread($this->socket, $byte_count);
-		set_magic_quotes_runtime($mqr);
 
-		return $buffer;
-	}	
-	
+class ConnectionSocket
+{
+    var $socket = null;
+
+    function socket_open($hostname, $port, $timeout)
+    {
+        if ($this->socket = @fsockopen($hostname, $port, $errno, $errstr, $timeout)) {
+            socket_set_blocking($this->socket, 0);
+            socket_set_timeout($this->socket, 31536000);
+
+            return true;
+        } else {
+            $this->error = "{$errstr} (#{$errno}, " . __FILE__ . ", " . __LINE__ . ")";
+            return false;
+        }
+    }
+
+    function socket_close()
+    {
+        return fclose($this->socket);
+    }
+
+    function socket_write($data)
+    {
+        return fwrite($this->socket, $data);
+    }
+
+    function socket_read($byte_count)
+    {
+        $mqr = get_magic_quotes_runtime();
+        set_magic_quotes_runtime(0);
+        $buffer = fread($this->socket, $byte_count);
+        set_magic_quotes_runtime($mqr);
+
+        return $buffer;
+    }
+
 }
+
 ?>

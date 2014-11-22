@@ -22,6 +22,7 @@
  * HISTORY
  *  v0.9rc3 (November 2014)
  *      - Adduser and vcard functions from here: https://www.ejabberd.im/node/3126
+ *      - Along with example script also from phillipj
  *
  *  v0.9rc2 (Oct 15, 2007)
  *	     - Fixed a number of notices in strict mode (courtesy of Edward Rudd)
@@ -2504,6 +2505,76 @@ class Jabber
     }
 
     // ==== Experimental service discovery support - END =======================
+
+
+    // ===== VCARD class =========================================================
+    // https://www.ejabberd.im/node/3126
+    // This class handles events fired by the first call of Jabber client class (to create a user);
+class AddMessenger
+{
+
+    function AddMessenger(&$jab, $name, $pass)
+    {
+        $this->jab = &$jab;
+        $this->jab->NewUserName = $name;
+        $this->jab->NewUserPass = $pass;
+    }
+
+// called when a connection to the Jabber server is established
+    function handleConnected()
+    {
+        global $AddUserErrorCode;
+        $AddUserErrorCode = 12002;
+// now that we're connected, tell the Jabber class to login
+        $this->jab->login(JABBER_USERNAME, JABBER_PASSWORD);
+
+    }
+
+// called after a login to indicate the the login was successful
+    function handleAuthenticated()
+    {
+        global $AddUserErrorCode;
+        $AddUserErrorCode = 12003;
+        $this->jab->adduser_init();
+    }
+
+}
+
+// End of AddMessenger class
+
+/******************************************************************************************************/
+
+// Here is class to handle second call to Jabber clase - to fill out vcard
+
+class AddVcard
+{
+
+    function AddVcard(&$jab, $name, $pass, $firstn, $lastn, $patro, $sex, $role)
+    {
+        $this->jab = &$jab;
+        $this->jab->NewUserName = $name;
+        $this->jab->NewUserPass = $pass;
+        $this->GivenName = iconv('CP1251', 'UTF-8', $firstn); // conversion from russian charset :)
+        $this->FamilyName = iconv('CP1251', 'UTF-8', $lastn);
+        $this->MiddleName = iconv('CP1251', 'UTF-8', $patro);
+    }
+
+    function handleConnected()
+    {
+        global $AddVcardErrorCode;
+        $AddVcardErrorCode = 14002;
+        $this->jab->login($this->jab->NewUserName, $this->jab->NewUserPass);
+    }
+
+    function handleAuthenticated()
+    {
+        global $AddVcardErrorCode;
+        $AddVcardErrorCode = 14003;
+        $this->jab->addvcard_request($this->GivenName, $this->FamilyName, $this->MiddleName, $this->UserRole);
+    }
+
+} // End of AddVcard class
+
 }
 
 ?>
